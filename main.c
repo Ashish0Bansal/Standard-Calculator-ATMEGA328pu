@@ -8,14 +8,15 @@
 #include <string.h>
 #include <xc.h>
 char input;
-const char calc_pad[4][4] = {
-				{'7', '8', '9', '+'}, // 7 8 9 +
-				{'4', '5', '6', '-'}, // 4 5 6 -
-				{'1', '2', '3', '*'}, // 1 2 3 *
-				{'.', '0', '=', '/'}, // . 0 = /
-			     };
+const char calc_pad[4][4] = { //changed the keypad layout according to the proteus models
+								{'7', '8', '9', '/'}, // 7 8 9 /
+								{'4', '5', '6', '*'}, // 4 5 6 *
+								{'1', '2', '3', '-'}, // 1 2 3 -
+								{'.', '0', '=', '+'}, // . 0 = +
+							};
 					  
 char keysense(){
+	char pre_in = input;
 	PORTB = 0;
 	LCD_Clear();
 	for(short i = 0; i<4 ; ++i){
@@ -26,14 +27,34 @@ char keysense(){
 			return input;
 		}
 
-		for(short j = 0; j<5; ++j){
+/*		for(short j = 0; j<5; ++j){ //Bug
 			if( (PINB & 1<<(4+j))>0 ){
 				LCD_Char(j+48);
 				input = calc_pad[i][j];
 				return input;
 			}
 		}
-		_delay_us(100);
+*/
+
+// 		Lcd_set_cursor(0,2); //Debug
+// 		LCD_Char(i|0x30);
+		switch(PINB>>4){ // to check bitwise instead of a for-loop and store the value in 'input' accordingly
+			case 1: input = calc_pad[i][0];
+					break;
+			case 2: input = calc_pad[i][1];
+					break;		
+			case 4: input = calc_pad[i][2];
+					break;
+			case 8: input = calc_pad[i][3];
+					break;
+			default: input = pre_in;
+					break;			
+		}
+		if(input!=pre_in){
+			_delay_ms(100);
+//			PORTB = 0x00;
+			return input;
+		}
 	}
 	return 0;
 }					  
@@ -55,6 +76,12 @@ int main(void)
     
 	while(1)
     {
-		keysense();
+		char c = keysense();
+		if(c!=0){
+			Lcd_set_cursor(0,0);
+			LCD_Char(c);
+			_delay_ms(100);
+			input = 0;
+		}
     }
 }

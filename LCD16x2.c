@@ -53,6 +53,13 @@ void LCD_String (const char *str)		/* Send string to LCD function */
 	}
 }
 
+void Lcd_set_cursor(unsigned int row, uint8_t pos){
+	if (row == 0 && pos<16)
+	LCD_Command((pos & 0x0F)|0x80);	/* Command of first row and required position<16 */
+	else if (row == 1 && pos<16)
+	LCD_Command((pos & 0x0F)|0xC0);	/* Command of first row and required position<16 */
+}
+
 void LCD_String_xy (char row, char pos,const char *str)  /* Send string to LCD with xy position */
 {
 	if (row == 0 && pos<16)

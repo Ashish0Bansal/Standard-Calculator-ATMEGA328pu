@@ -27,6 +27,7 @@ void LCD_Command(unsigned char cmnd);
 void LCD_Char (unsigned char char_data);
 void LCD_Init (void);
 void LCD_String (const char *str);
+void Lcd_set_cursor(unsigned int row, uint8_t pos);
 void LCD_String_xy (char row, char pos,const char *str) ;
 void LCD_Clear();
 
